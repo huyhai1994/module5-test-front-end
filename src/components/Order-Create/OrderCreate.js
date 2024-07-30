@@ -34,11 +34,11 @@ const OrderAdd = () => {
 
 
             orderService.createOrder(orderData).then(() => {
-                toast.success('Order added successfully');
+                toast.success('Thêm sản phẩm mới thành công !');
                 resetForm();
                 navigate('/');
             }).catch(error => {
-                toast.error('Failed to add order');
+                toast.error('Sản phẩm thêm thất bại!');
             }).finally(() => {
                 setSubmitting(false);
             });
