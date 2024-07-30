@@ -5,29 +5,54 @@ import {useNavigate} from 'react-router-dom';
 import './OrderList.css'; // Make sure to create and update this CSS file
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPen} from '@fortawesome/free-solid-svg-icons';
+import {toast} from "react-toastify";
 
 const OrderList = () => {
     const [orders, setOrders] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [ordersPerPage] = useState(10);
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const navigate = useNavigate();
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
     const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
-    
+
     useEffect(() => {
         orderService.getAllOrders().then(response => {
-            const sortedOrders = response.data.sort((a, b) => (b.product.price * b.quantity) - (a.product.price * a.quantity));
+            const sortedOrders = response.data.sort((a, b) => b.product.price * b.quantity - a.product.price * a.quantity);
             setOrders(sortedOrders);
         });
     }, []);
-
+    const handleFilter = () => {
+        orderService.getAllOrders().then(response => {
+            const filteredOrders = response.data.filter(order => {
+                const orderDate = new Date(order.date);
+                return (!startDate || orderDate >= new Date(startDate)) && (!endDate || orderDate <= new Date(endDate));
+            });
+            if (filteredOrders.length === 0) {
+                toast.error('Không tìm thấy đơn hàng trong ngày bạn chọn..');
+            }
+            setOrders(filteredOrders);
+        });
+    };
 
     return (<div className="container">
-        <h4 className="card-title text-center my-5">Thống kê đơn hàng </h4>
+        <h4 className="card-title text-center my-5">Thống kê đơn hàng</h4>
+        <div className="d-flex justify-content-between mb-3">
+            <div>
+                <label htmlFor="startDate">Start Date: </label>
+                <input type="date" id="startDate" value={startDate} onChange={(e) => setStartDate(e.target.value)}/>
+            </div>
+            <div>
+                <label htmlFor="endDate">End Date: </label>
+                <input type="date" id="endDate" value={endDate} onChange={(e) => setEndDate(e.target.value)}/>
+            </div>
+            <Button className="btn btn-primary" onClick={handleFilter}>Filter</Button>
+        </div>
         <div className='table-responsive'>
-            <Button className='btn btn-primary float-end' onClick={() => navigate('/order-add')}>THêm mới đơn
+            <Button className='btn btn-primary float-end' onClick={() => navigate('/order-add')}>Thêm mới đơn
                 hàng</Button>
             <Table dark striped bordered hover>
                 <thead>
