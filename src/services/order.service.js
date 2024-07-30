@@ -5,6 +5,15 @@ class OrderService {
     static async getAllOrders() {
         return await axios.get(ORDERS_API_URL + '?_embed=product');
     }
+
+    static async getOrderById(id) {
+        return await axios.get(ORDERS_API_URL + '/' + id);
+    }
+
+    static async updateOrder(id, updatedValues) {
+        return await axios.put(ORDERS_API_URL + '/' + id, updatedValues);
+    }
+
 }
 
 export default OrderService;
