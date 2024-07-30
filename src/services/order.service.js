@@ -14,6 +14,9 @@ class OrderService {
         return await axios.put(ORDERS_API_URL + '/' + id, updatedValues);
     }
 
+    static async createOrder(orderData) {
+        return await axios.post(ORDERS_API_URL, orderData);
+    }
 }
 
 export default OrderService;

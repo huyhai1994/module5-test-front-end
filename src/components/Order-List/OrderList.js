@@ -11,18 +11,18 @@ const OrderList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [ordersPerPage] = useState(10);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        orderService.getAllOrders().then(response => {
-            setOrders(response.data);
-        });
-    }, []);
-
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
     const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
-
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    
+    useEffect(() => {
+        orderService.getAllOrders().then(response => {
+            const sortedOrders = response.data.sort((a, b) => (b.product.price * b.quantity) - (a.product.price * a.quantity));
+            setOrders(sortedOrders);
+        });
+    }, []);
+
 
     return (<div className="container">
         <h4 className="card-title text-center my-5">Thống kê đơn hàng </h4>
